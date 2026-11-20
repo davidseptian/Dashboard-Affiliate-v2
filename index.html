@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypotech — Affiliate v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0c; --panel:#1a1a19; --panel-2:#222120; --line:#2f2d2b; --grid:#2a2928;
+  --gold:#c9a227; --gold-light:#e9c767;
+  --text:#f3f1ea; --text-2:#c3c2b7; --muted:#9a968c;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --b1:#d55181; --b2:#0ca30c; --b3:#9085e9; --b4:#e66767;
+  --good:#0ca30c; --warn:#c98500; --bad:#e66767; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.45}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 60px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:6px 0 18px;border-bottom:1px solid var(--line)}
+.brand{font-size:22px;font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,var(--gold-light),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);font-size:12px;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--text-2);background:var(--panel)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block}
+.badge.live i{background:var(--good)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
+.filters label{font-size:12px;color:var(--muted)}
+select,input[type=text],button.btn{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:13px}
+button.btn{cursor:pointer}
+button.btn:hover,select:hover{border-color:var(--gold-dim,#5f4f19)}
+button.btn.gold{background:var(--gold);color:#17140a;border-color:var(--gold);font-weight:700}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12px;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--text-2);cursor:pointer}
+.chip.on{background:var(--gold);color:#17140a;border-color:var(--gold);font-weight:700}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:14px 0 4px;border-bottom:1px solid var(--line)}
+nav.tabs button{background:none;border:0;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:10px 14px;cursor:pointer;border-bottom:2px solid transparent}
+nav.tabs button.on{color:var(--gold-light);border-bottom-color:var(--gold)}
+section.tab{display:none;margin-top:16px}
+section.tab.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:14px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:24px;font-weight:800;margin-top:4px;letter-spacing:-.3px}
+.kpi .n{font-size:11.5px;color:var(--text-2);margin-top:3px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;min-width:0}
+.card h3{margin:0;font-size:14px;font-weight:700}
+.card .d{font-size:12px;color:var(--muted);margin:3px 0 10px}
+.card .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.tbtn{font-size:11px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tbtn:hover{color:var(--text)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:2px 0 6px;font-size:12px;color:var(--text-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend b{width:10px;height:10px;border-radius:3px;display:inline-block}
+.legend u{width:14px;height:0;border-top:2px solid;display:inline-block}
+svg text{font-family:'Plus Jakarta Sans',sans-serif;fill:var(--muted);font-size:11px}
+svg .grid{stroke:var(--grid);stroke-width:1}
+svg .axis{stroke:var(--line);stroke-width:1}
+.tw{overflow:auto;margin-top:8px;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--gold);font-weight:700;background:#121110;position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+tr.tot td{font-weight:800;background:var(--panel-2)}
+.st{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;border:1px solid}
+.st.ok{color:var(--good);border-color:var(--good)}.st.w{color:var(--warn);border-color:var(--warn)}.st.x{color:var(--bad);border-color:var(--bad)}.st.n{color:var(--muted);border-color:var(--line)}
+.hb{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;gap:10px;align-items:center;padding:5px 0;font-size:12.5px}
+.hb .nm{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .tr{height:10px;background:#242321;border-radius:5px;overflow:hidden}
+.hb .br{height:100%;border-radius:0 4px 4px 0;background:var(--gold)}
+.hb .vl{font-weight:700;font-variant-numeric:tabular-nums}
+.note{background:#1d1a10;border:1px solid #4a3f17;border-radius:10px;padding:10px 13px;font-size:12.5px;color:#e6d9a4;margin-top:12px}
+.note b{color:var(--gold-light)}
+#tip{position:fixed;pointer-events:none;z-index:50;background:#0f0f0e;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:12px;min-width:150px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none}
+#tip .h{color:var(--muted);margin-bottom:5px;font-size:11.5px}
+#tip .r{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:3px}
+#tip .r em{font-style:normal;color:var(--text-2);display:flex;align-items:center;gap:7px}
+#tip .r em u{width:12px;border-top:2px solid;display:inline-block}
+#tip .r strong{font-variant-numeric:tabular-nums}
+footer{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+.cfg{display:none;margin-top:10px}.cfg.on{display:flex;gap:8px;flex-wrap:wrap}
+.cfg input{flex:1;min-width:260px}
+.dim{opacity:.55;transition:opacity .15s}
+.panel{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:40;justify-content:flex-end}
+.panel.on{display:flex}
+.panel .pin{width:min(560px,100%);height:100%;overflow:auto;background:var(--bg);border-left:1px solid var(--line);padding:18px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+input[type=text],input[type=password]{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <div class="brand">Hypotech · Affiliate v2</div>
+    <div class="sub">Membaca Master 3 (tab Afiliator dan Afiliator_Snapshot) · versi uji paralel, Affiliate Tracker lama tidak diubah</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <span class="badge" id="badge"><i></i><span id="badgeTxt">Belum terhubung</span></span>
+    <button class="btn" id="cfgBtn">Sumber data</button>
+  </div>
+</header>
+<div class="cfg" id="cfg">
+  <input type="text" id="apiUrl" placeholder="URL Web App Apps Script (…/exec)">
+  <input type="password" id="apiKey" placeholder="Kunci rahasia" autocomplete="off" style="max-width:220px">
+  <button class="btn gold" id="loadBtn">Muat</button>
+  <button class="btn" id="resetBtn">Putuskan &amp; hapus kunci</button>
+</div>
+<div id="warn" class="note" style="display:none"></div>
+<div class="filters">
+  <label>Bulan</label><select id="selM"></select>
+  <label style="margin-left:10px">Platform</label><select id="selP"><option value="">Semua platform</option></select>
+</div>
+<nav class="tabs" id="tabs">
+  <button data-t="dash" class="on">Dashboard</button>
+  <button data-t="all">Semua Affiliate</button>
+</nav>
+
+<section class="tab on" id="t-dash">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="card" id="c-gmv"></div>
+    <div class="card" id="c-aktif"></div>
+  </div>
+  <div class="grid2">
+    <div class="card" id="c-tier"></div>
+    <div class="card" id="c-top"></div>
+  </div>
+  <div class="grid2">
+    <div class="card" id="c-up"></div>
+    <div class="card" id="c-down"></div>
+  </div>
+</section>
+
+<section class="tab" id="t-all">
+  <div class="bar">
+    <input type="text" id="fQ" placeholder="Cari username / nama…" style="min-width:240px">
+    <select id="fT"><option value="">Semua tier</option><option>Platinum</option><option>Gold</option><option>Silver</option><option>Bronze</option><option value="None">Belum ada penjualan</option></select>
+    <select id="fS"><option value="gmv_desc">GMV tertinggi</option><option value="gmv_asc">GMV terendah</option><option value="jual_desc">Terjual terbanyak</option><option value="nama_asc">Nama A–Z</option></select>
+    <span id="cnt" class="sub"></span>
+  </div>
+  <div class="tw"><table><thead><tr>
+    <th>Platform</th><th>Username</th><th>Nama</th><th>Tier</th><th>Tren</th><th>GMV</th><th>Terjual</th><th>Dipromokan</th><th>Showcase</th><th>Video</th><th>Komisi</th><th>Follow up</th><th></th>
+  </tr></thead><tbody id="tb"></tbody></table></div>
+  <div style="margin-top:10px"><button class="btn" id="more" style="display:none">Tampilkan lebih banyak</button></div>
+</section>
+<footer id="foot"></footer>
+</div>
+<div id="panel" class="panel"><div class="pin">
+  <div style="display:flex;justify-content:space-between;gap:10px"><div><div id="pNama" class="brand" style="font-size:18px"></div><div id="pSub" class="sub"></div></div><button class="btn" id="pClose">Tutup</button></div>
+  <div id="pBody"></div>
+</div></div>
+<div id="tip" role="status"></div>
+<script>
+const $ = s=>document.querySelector(s);
+const rp = n=>(n<0?'-':'')+'Rp'+Math.round(Math.abs(n)).toLocaleString('id-ID');
+const jt = n=>(n/1e6).toLocaleString('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1})+' jt';
+const num = n=>Math.round(n).toLocaleString('id-ID');
+const pct = (a,b)=>b?(a/b*100).toLocaleString('id-ID',{maximumFractionDigits:1})+'%':'–';
+const sum = a=>a.reduce((x,y)=>x+(y||0),0);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+/* ---------- tooltip ---------- */
+const tip=$('#tip');
+function showTip(ev,head,rows){
+  tip.replaceChildren();
+  tip.appendChild(el('div','h',head));
+  rows.forEach(r=>{const d=el('div','r');const e=el('em');
+    if(r.c){const u=el('u');u.style.borderTopColor=r.c;e.appendChild(u)}
+    e.appendChild(document.createTextNode(r.n));d.appendChild(e);d.appendChild(el('strong',null,r.v));tip.appendChild(d)});
+  tip.style.display='block';
+  const w=tip.offsetWidth,h=tip.offsetHeight;let x=ev.clientX+14,y=ev.clientY+14;
+  if(x+w>innerWidth-8)x=ev.clientX-w-14;if(y+h>innerHeight-8)y=ev.clientY-h-14;
+  tip.style.left=x+'px';tip.style.top=y+'px';
+}
+const hideTip=()=>tip.style.display='none';
+
+/* ---------- komponen card ---------- */
+function card(id,title,desc,legend,svg,tableFn){
+  const c=$(id);c.replaceChildren();
+  const hd=el('div','hd');const l=el('div');l.appendChild(el('h3',null,title));l.appendChild(el('div','d',desc));hd.appendChild(l);
+  let tw;
+  if(tableFn){const b=el('button','tbtn','Lihat tabel');b.onclick=()=>{const o=tw.style.display==='none';tw.style.display=o?'block':'none';b.textContent=o?'Sembunyikan tabel':'Lihat tabel'};hd.appendChild(b)}
+  c.appendChild(hd);
+  if(legend&&legend.length){const lg=el('div','legend');legend.forEach(x=>{const s=el('span');const k=x.line?el('u'):el('b');if(x.line)k.style.borderTopColor=x.c;else k.style.background=x.c;s.appendChild(k);s.appendChild(document.createTextNode(x.n));lg.appendChild(s)});c.appendChild(lg)}
+  if(svg)c.appendChild(svg);
+  if(tableFn){tw=el('div','tw');tw.style.display='none';tw.appendChild(tableFn());c.appendChild(tw)}
+  return c;
+}
+function table(head,rows,totRow){
+  const t=el('table');const th=el('thead');const tr=el('tr');head.forEach(h=>tr.appendChild(el('th',null,h)));th.appendChild(tr);t.appendChild(th);
+  const tb=el('tbody');rows.forEach(r=>{const x=el('tr');r.forEach(v=>{const td=el('td');if(v instanceof Node)td.appendChild(v);else td.textContent=v;x.appendChild(td)});tb.appendChild(x)});
+  if(totRow){const x=el('tr','tot');totRow.forEach(v=>x.appendChild(el('td',null,v)));tb.appendChild(x)}
+  t.appendChild(tb);return t;
+}
+const SVGNS='http://www.w3.org/2000/svg';
+const S=(t,a={},p)=>{const e=document.createElementNS(SVGNS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const f=v/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p}
+function axisY(svg,W,H,m,max,fmtF){
+  for(let i=0;i<=4;i++){const y=m.t+(H-m.t-m.b)*(1-i/4);S('line',{x1:m.l,x2:W-m.r,y1:y,y2:y,class:i?'grid':'axis'},svg);
+    const t=S('text',{x:m.l-8,y:y+4,'text-anchor':'end'},svg);t.textContent=fmtF(max*i/4)}
+}
+/* stacked bars */
+function stackedBars(cats,series,opt){
+  const W=620,H=270,m={l:48,r:10,t:10,b:26};const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':opt.label});
+  const tot=cats.map((_,i)=>sum(series.map(s=>s.v[i])));const max=niceMax(Math.max(1,...tot));
+  axisY(svg,W,H,m,max,opt.axisFmt);
+  const band=(W-m.l-m.r)/cats.length,bw=Math.min(30,band*.58);
+  cats.forEach((c,i)=>{
+    const x=m.l+band*i+(band-bw)/2;let y=H-m.b;const pxv=v=>v/max*(H-m.t-m.b);
+    const last=[...series].reverse().findIndex(s=>s.v[i]>0);const topIdx=last<0?-1:series.length-1-last;
+    series.forEach((s,k)=>{const h=pxv(s.v[i]);if(h<=0)return;y-=h;
+      const r=S('rect',{x,y,width:bw,height:Math.max(h-(k<topIdx||true?0:0),0),fill:s.c,stroke:'var(--panel)','stroke-width':2},svg);
+      if(k===topIdx){r.setAttribute('rx',4)}});
+    const t=S('text',{x:x+bw/2,y:H-8,'text-anchor':'middle'},svg);t.textContent=c;
+    const hit=S('rect',{x:m.l+band*i,y:m.t,width:band,height:H-m.t-m.b,fill:'transparent',tabindex:0,'aria-label':c+': '+opt.fmt(tot[i])},svg);
+    const rows=()=>series.slice().reverse().filter(s=>s.v[i]!==0||opt.zero).map(s=>({n:s.n,c:s.c,v:opt.fmt(s.v[i])})).concat([{n:'Total',v:opt.fmt(tot[i])}]);
+    hit.addEventListener('pointermove',e=>showTip(e,c+(opt.note&&opt.note[i]?' · '+opt.note[i]:''),rows()));
+    hit.addEventListener('pointerleave',hideTip);
+    hit.addEventListener('focus',()=>{const b=hit.getBoundingClientRect();showTip({clientX:b.x+b.width/2,clientY:b.y+30},c,rows())});hit.addEventListener('blur',hideTip);
+  });
+  return svg;
+}
+/* line chart */
+function lineChart(cats,series,opt){
+  const W=620,H=270,m={l:48,r:70,t:12,b:26};const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':opt.label});
+  const all=series.flatMap(s=>s.v.filter(v=>v!=null));const max=niceMax(Math.max(1,...all));
+  axisY(svg,W,H,m,max,opt.axisFmt);
+  const band=(W-m.l-m.r)/cats.length;const X=i=>m.l+band*i+band/2,Y=v=>H-m.b-v/max*(H-m.t-m.b);
+  cats.forEach((c,i)=>{const t=S('text',{x:X(i),y:H-8,'text-anchor':'middle'},svg);t.textContent=c});
+  series.forEach(s=>{let d='';s.v.forEach((v,i)=>{if(v==null){return}d+=(d&&s.v[i-1]!=null?'L':'M')+X(i)+' '+Y(v)});
+    S('path',{d,fill:'none',stroke:s.c,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round','stroke-dasharray':s.dash||''},svg)});
+  const cross=S('line',{y1:m.t,y2:H-m.b,stroke:'#555','stroke-width':1,style:'display:none'},svg);
+  const dots=series.map(s=>S('circle',{r:4.5,fill:s.c,stroke:'var(--panel)','stroke-width':2,style:'display:none'},svg));
+  series.forEach((s,k)=>{let li=s.v.length-1;while(li>=0&&s.v[li]==null)li--;if(li>=0&&opt.endLabels){const t=S('text',{x:X(li)+8,y:Y(s.v[li])+(k?12:-4),style:'fill:var(--text-2)'},svg);t.textContent=s.short||s.n}});
+  const hit=S('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b,fill:'transparent'},svg);
+  hit.addEventListener('pointermove',e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)/r.width*W;let i=Math.floor((px-m.l)/band);i=Math.max(0,Math.min(cats.length-1,i));
+    cross.setAttribute('x1',X(i));cross.setAttribute('x2',X(i));cross.style.display='';
+    dots.forEach((d,k)=>{const v=series[k].v[i];if(v==null){d.style.display='none'}else{d.setAttribute('cx',X(i));d.setAttribute('cy',Y(v));d.style.display=''}});
+    showTip(e,cats[i],series.map(s=>({n:s.n,c:s.c,v:s.v[i]==null?'belum ada':opt.fmt(s.v[i])})))});
+  hit.addEventListener('pointerleave',()=>{hideTip();cross.style.display='none';dots.forEach(d=>d.style.display='none')});
+  return svg;
+}
+/* horizontal bars */
+function hbars(items,opt){
+  const box=el('div');const max=Math.max(1,...items.map(i=>i.v));
+  items.forEach(it=>{const r=el('div','hb');r.tabIndex=0;r.appendChild(el('div','nm',it.n));r.lastChild.title=it.n;
+    const tr=el('div','tr');const b=el('div','br');b.style.width=(it.v/max*100)+'%';if(it.c)b.style.background=it.c;tr.appendChild(b);r.appendChild(tr);
+    r.appendChild(el('div','vl',opt.fmt(it.v)));
+    const f=e=>showTip(e,it.n,it.rows||[{n:opt.name||'Nilai',v:opt.fmt(it.v)}]);r.addEventListener('pointermove',f);r.addEventListener('pointerleave',hideTip);
+    r.addEventListener('focus',()=>{const bb=r.getBoundingClientRect();showTip({clientX:bb.x+bb.width/2,clientY:bb.y+10},it.n,it.rows||[{n:opt.name||'Nilai',v:opt.fmt(it.v)}])});r.addEventListener('blur',hideTip);
+    box.appendChild(r)});
+  return box;
+}
+const chipSt=(txt,cls)=>{const s=el('span','st '+cls,txt);return s};
+
+let DATA={aff:[],snap:[],bulan:[]},AFF=[],BL=[];
+const BLN=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const lbl=b=>{const p=String(b).split('-');return BLN[+p[1]-1]+' '+p[0]};
+const PFC={'Shopee':'var(--s1)','Tokopedia':'var(--s3)'};const pfc=p=>PFC[p]||'var(--s4)';
+const TIERS=['Platinum','Gold','Silver','Bronze','None'];
+const tierOf=g=>{g=Number(g)||0;return g<=0?'None':g>=2000000?'Platinum':g>=500000?'Gold':g>=100000?'Silver':'Bronze'};
+const tierCls={Platinum:'x2',Gold:'w',Silver:'n',Bronze:'w2',None:'n'};
+const tierLb=t=>t==='None'?'—':t;
+let M='',PF='',LIM=200;
+
+function prep(){
+  AFF=DATA.aff.map(a=>({id:a[0],pf:a[1],u:a[2],n:a[3],fol:a[4],tipe:a[5],src:a[6],upd:a[7],fu:a[8],fuTgl:a[9],st:a[10],s:{}}));
+  DATA.snap.forEach(r=>{if(AFF[r[0]])AFF[r[0]].s[r[1]]={gmv:r[2],jual:r[3],promo:r[4],show:r[5],vid:r[6],fol:r[7],kom:r[8]}});
+  BL=DATA.bulan.slice();
+  const sm=$('#selM'),old=M;sm.replaceChildren();BL.slice().reverse().forEach(b=>{const o=el('option',null,lbl(b));o.value=b;sm.appendChild(o)});
+  M=BL.includes(old)?old:(BL[BL.length-1]||'');sm.value=M;
+  const sp=$('#selP'),op=PF;sp.replaceChildren();const o0=el('option',null,'Semua platform');o0.value='';sp.appendChild(o0);
+  [...new Set(AFF.map(a=>a.pf))].sort().forEach(p=>{const o=el('option',null,p);o.value=p;sp.appendChild(o)});sp.value=[...sp.options].some(o=>o.value===op)?op:'';PF=sp.value;
+}
+const g=(a,b)=>a.s[b]?a.s[b].gmv:0;
+const prevM=b=>{const i=BL.indexOf(b);return i>0?BL[i-1]:''};
+const pool=()=>AFF.filter(a=>!PF||a.pf===PF);
+function trend(a,b){const p=prevM(b);if(!p)return null;const pv=g(a,p),cu=g(a,b);if(Math.max(pv,cu)<100000)return null;
+  const pc=pv===0?100:(cu-pv)/pv*100;return pc>=50?{d:'up',pc,pv,cu}:pc<=-50?{d:'down',pc,pv,cu}:null}
+const tierChip=t=>{const s=el('span','st '+(t==='Platinum'?'x2':t==='Gold'?'w':t==='None'?'n':'n'),tierLb(t));if(t==='Platinum')s.style.cssText='color:#b48cf0;border-color:#b48cf0';if(t==='Bronze')s.style.cssText='color:#d98a4a;border-color:#d98a4a';if(t==='Silver')s.style.cssText='color:#c3c2b7;border-color:#8a8a85';return s};
+
+function render(){
+  const k=$('#kpis');k.replaceChildren();
+  if(!BL.length){k.appendChild(el('div','note','Belum ada data. Klik Sumber data, isi URL dan kunci, lalu Muat.'));['#c-gmv','#c-aktif','#c-tier','#c-top','#c-up','#c-down'].forEach(i=>$(i).replaceChildren());$('#tb').replaceChildren();$('#cnt').textContent='';return}
+  const P=pool(),pm=prevM(M);
+  const gm=sum(P.map(a=>g(a,M))),gp=pm?sum(P.map(a=>g(a,pm))):null;
+  const akt=P.filter(a=>g(a,M)>0),kom=sum(P.map(a=>a.s[M]?a.s[M].kom:0));
+  const addK=(l,v,n)=>{const d=el('div','kpi');d.appendChild(el('div','l',l));d.appendChild(el('div','v',v));d.appendChild(el('div','n',n||''));k.appendChild(d)};
+  addK('Affiliate terdaftar',num(P.length),'semua akun di Master 3');
+  addK('Aktif ('+lbl(M)+')',num(akt.length),pct(akt.length,P.length)+' dari terdaftar, GMV > 0');
+  addK('GMV '+lbl(M),jt(gm),gp==null?'bulan pertama':(gm>=gp?'naik ':'turun ')+pct(Math.abs(gm-gp),gp)+' dari '+lbl(pm));
+  addK('Estimasi komisi',jt(kom),pct(kom,gm)+' dari GMV');
+  addK('Rata-rata GMV per aktif',akt.length?rp(gm/akt.length):'—','akun dengan penjualan');
+  const pfs=[...new Set(AFF.map(a=>a.pf))].sort().filter(p=>!PF||p===PF);
+  const mk=(f)=>pfs.map(p=>({n:p,c:pfc(p),v:BL.map(b=>f(AFF.filter(a=>a.pf===p),b))}));
+  const s1=mk((L,b)=>sum(L.map(a=>g(a,b))));
+  card('#c-gmv','GMV affiliate per bulan','Per platform, semua bulan yang ada di snapshot.',s1.map(s=>({n:s.n,c:s.c})),
+    stackedBars(BL.map(lbl),s1,{fmt:rp,axisFmt:v=>(v/1e6).toLocaleString('id-ID')+' jt',label:'GMV affiliate per bulan'}),
+    ()=>table(['Bulan',...s1.map(s=>s.n),'Total'],BL.map((b,i)=>[lbl(b),...s1.map(s=>num(s.v[i])),num(sum(s1.map(s=>s.v[i])))])));
+  const s2=mk((L,b)=>L.filter(a=>g(a,b)>0).length);
+  card('#c-aktif','Affiliate aktif per bulan','Jumlah akun dengan GMV di atas nol.',s2.map(s=>({n:s.n,c:s.c})),
+    stackedBars(BL.map(lbl),s2,{fmt:num,axisFmt:v=>num(v),label:'Affiliate aktif per bulan'}),
+    ()=>table(['Bulan',...s2.map(s=>s.n),'Total'],BL.map((b,i)=>[lbl(b),...s2.map(s=>num(s.v[i])),num(sum(s2.map(s=>s.v[i])))])));
+  const td=TIERS.map(t=>{const L=P.filter(a=>tierOf(g(a,M))===t);return {t,n:L.length,g:sum(L.map(a=>g(a,M)))}});
+  card('#c-tier','Distribusi tier ('+lbl(M)+')','Tier dari GMV bulan itu: Platinum ≥ Rp2 jt, Gold ≥ Rp500 rb, Silver ≥ Rp100 rb, Bronze di bawahnya. '+num(td[4].n)+' akun belum ada penjualan bulan ini (tidak digambar).',null,
+    hbars(td.filter(x=>x.t!=='None').map(x=>({n:x.t,v:x.n,rows:[{n:'Akun',v:num(x.n)},{n:'GMV',v:rp(x.g)}]})),{fmt:v=>num(v)+' akun'}),
+    ()=>table(['Tier','Akun','GMV'],td.map(x=>[x.t==='None'?'Belum ada penjualan':x.t,num(x.n),num(x.g)])));
+  const top=P.filter(a=>g(a,M)>0).sort((a,b)=>g(b,M)-g(a,M)).slice(0,20);
+  const c=$('#c-top');c.replaceChildren();c.appendChild(el('h3',null,'Top 20 ('+lbl(M)+')'));c.appendChild(el('div','d','Berdasarkan GMV bulan terpilih.'));
+  const tw=el('div','tw');tw.appendChild(table(['#','Platform','Username','GMV','Terjual'],top.map((a,i)=>[String(i+1),a.pf,linkBtn(a),num(g(a,M)),num(a.s[M].jual)])));c.appendChild(tw);
+  const tr=P.map(a=>({a,t:trend(a,M)})).filter(x=>x.t);
+  const lst=(id,jd,desc,arr)=>{const c=$(id);c.replaceChildren();c.appendChild(el('h3',null,jd));c.appendChild(el('div','d',desc));
+    const w=el('div','tw');w.appendChild(arr.length?table(['Username','Platform',lbl(prevM(M)||M),lbl(M),'Perubahan'],arr.slice(0,10).map(x=>[linkBtn(x.a),x.a.pf,num(x.t.pv),num(x.t.cu),(x.t.pc>0?'+':'')+Math.round(x.t.pc)+'%'])):el('div','empty','Tidak ada.'));c.appendChild(w)};
+  const up=tr.filter(x=>x.t.d==='up').sort((a,b)=>(b.t.cu-b.t.pv)-(a.t.cu-a.t.pv)),dn=tr.filter(x=>x.t.d==='down').sort((a,b)=>(a.t.cu-a.t.pv)-(b.t.cu-b.t.pv));
+  const rule='Dibanding bulan sebelumnya, naik atau turun ≥ 50%. Hanya akun yang GMV-nya di salah satu bulan ≥ Rp100 rb. Bulan tanpa data dihitung 0. ('+tr.length+' akun terdeteksi)';
+  lst('#c-up','Naik daun',rule,up);lst('#c-down','Mulai sepi',rule,dn);
+  renderTable();
+  $('#foot').textContent='Sumber: Master 3 (Afiliator, Afiliator_Snapshot). Data tersedia sampai '+lbl(BL[BL.length-1])+'. Upload laporan baru dan catatan follow-up sementara tetap lewat Affiliate Tracker lama.';
+}
+function linkBtn(a){const b=el('a',null,a.u);b.href='#';b.style.cssText='color:var(--gold-light);text-decoration:none';b.onclick=e=>{e.preventDefault();openPanel(a)};return b}
+
+function renderTable(){
+  const q=$('#fQ').value.trim().toLowerCase(),ft=$('#fT').value,so=$('#fS').value;
+  let L=pool().filter(a=>(!q||(a.u+' '+a.n).toLowerCase().includes(q))&&(!ft||tierOf(g(a,M))===ft));
+  const jl=a=>a.s[M]?a.s[M].jual:0;
+  L.sort(so==='gmv_asc'?(a,b)=>g(a,M)-g(b,M):so==='jual_desc'?(a,b)=>jl(b)-jl(a):so==='nama_asc'?(a,b)=>(a.n||a.u).localeCompare(b.n||b.u):(a,b)=>g(b,M)-g(a,M));
+  $('#cnt').textContent=num(L.length)+' akun · bulan '+lbl(M);
+  const tb=$('#tb');tb.replaceChildren();
+  if(!L.length){const tr=el('tr'),td=el('td','empty','Tidak ada affiliate yang cocok.');td.colSpan=13;tr.appendChild(td);tb.appendChild(tr)}
+  L.slice(0,LIM).forEach(a=>{const s=a.s[M]||{},tr=el('tr');
+    tr.appendChild(el('td',null,a.pf));const u=el('td');u.appendChild(linkBtn(a));tr.appendChild(u);tr.appendChild(el('td',null,a.n));
+    const t=el('td');t.appendChild(tierChip(tierOf(s.gmv)));tr.appendChild(t);
+    const tt=trend(a,M),td=el('td');if(tt){const sp=el('span','st '+(tt.d==='up'?'ok':'x'),tt.d==='up'?'▲ naik daun':'▼ mulai sepi');td.appendChild(sp)}else td.textContent='—';tr.appendChild(td);
+    [s.gmv,s.jual,s.promo,s.show,s.vid,s.kom].forEach(v=>tr.appendChild(el('td',null,v?num(v):'—')));
+    tr.appendChild(el('td',null,a.fu?(a.fuTgl?a.fuTgl+' · ':'')+a.fu:'—'));
+    const d=el('td'),b=el('button','btn','Detail');b.onclick=()=>openPanel(a);d.appendChild(b);tr.appendChild(d);tb.appendChild(tr)});
+  $('#more').style.display=L.length>LIM?'inline-block':'none';
+}
+function openPanel(a){
+  $('#pNama').textContent=a.n||a.u;$('#pSub').textContent=a.pf+' · @'+a.u+' · '+a.id;
+  const B=$('#pBody');B.replaceChildren();
+  const ser=[{n:'GMV',c:'var(--gold)',v:BL.map(b=>g(a,b))}];
+  const c=el('div','card');c.style.marginTop='12px';c.id='pc';B.appendChild(c);
+  card('#pc','GMV per bulan','Semua bulan di snapshot (bulan tanpa data = 0).',null,stackedBars(BL.map(lbl),ser,{fmt:rp,axisFmt:v=>v>=1e6?(v/1e6).toLocaleString('id-ID')+' jt':(v/1e3).toLocaleString('id-ID')+' rb',label:'GMV per bulan'}),
+    ()=>table(['Bulan','GMV','Terjual','Komisi'],BL.map(b=>[lbl(b),num(g(a,b)),num(a.s[b]?a.s[b].jual:0),num(a.s[b]?a.s[b].kom:0)])));
+  const i=el('div','card');i.style.marginTop='12px';
+  [['Status',a.st||'—'],['Tier bulan '+lbl(M),tierLb(tierOf(g(a,M)))],['Terakhir update',a.upd||'—'],['Sumber',a.src||'—'],['Follow up terakhir',a.fu?(a.fuTgl?a.fuTgl+' · ':'')+a.fu:'Belum ada catatan']].forEach(([x,y])=>{const r=el('div');r.style.cssText='display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px';r.appendChild(el('span',null,x));const v=el('b',null,y);v.style.fontWeight='600';r.appendChild(v);i.appendChild(r)});
+  B.appendChild(i);B.appendChild(el('div','note','Catatan follow-up baru sementara masih dicatat di Affiliate Tracker lama. Versi ini hanya menampilkan.'));
+  $('#panel').classList.add('on');
+}
+$('#pClose').onclick=()=>$('#panel').classList.remove('on');
+$('#panel').addEventListener('click',e=>{if(e.target.id==='panel')$('#panel').classList.remove('on')});
+$('#selM').onchange=e=>{M=e.target.value;LIM=200;render()};$('#selP').onchange=e=>{PF=e.target.value;LIM=200;render()};
+['fQ','fT','fS'].forEach(i=>{$('#'+i).addEventListener('input',()=>{LIM=200;renderTable()});$('#'+i).addEventListener('change',()=>{LIM=200;renderTable()})});
+$('#more').onclick=()=>{LIM+=300;renderTable()};
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+b.dataset.t));hideTip()});
+$('#cfgBtn').onclick=()=>$('#cfg').classList.toggle('on');
+try{const u=localStorage.getItem('hypotech_v2_api'),k=localStorage.getItem('hypotech_v2_key');if(u)$('#apiUrl').value=u;if(k)$('#apiKey').value=k}catch(e){}
+function jsonp(url,key){return new Promise((res,rej)=>{const cb='haf_'+Date.now();const s=document.createElement('script');const t=setTimeout(()=>{cl();rej(new Error('Waktu habis'))},40000);
+  function cl(){clearTimeout(t);delete window[cb];s.remove()}
+  window[cb]=d=>{cl();res(d)};s.onerror=()=>{cl();rej(new Error('Gagal memuat'))};
+  s.src=url+(url.includes('?')?'&':'?')+'action=affiliate&fresh=1&key='+encodeURIComponent(key)+'&callback='+cb;document.head.appendChild(s)})}
+async function muat(){const u=$('#apiUrl').value.trim(),k=$('#apiKey').value;if(!u||!k){$('#cfg').classList.add('on');return}
+  $('#badgeTxt').textContent='Memuat…';document.body.classList.add('dim');const w=$('#warn');w.style.display='none';
+  try{const d=await jsonp(u,k);if(d.error)throw new Error(d.error);DATA=d;try{localStorage.setItem('hypotech_v2_api',u);localStorage.setItem('hypotech_v2_key',k)}catch(e){}
+    $('#badge').classList.add('live');$('#cfg').classList.remove('on');$('#badgeTxt').textContent='Live dari Master 3 · '+(d.diperbarui||'');
+    const g2=d.diagnosa,m=[];if(g2){if(g2.snap_tanpa_afiliator>0)m.push(g2.snap_tanpa_afiliator+' baris snapshot dilewati karena ID afiliator tidak ada di tab Afiliator');if(g2.bulan_tak_terbaca>0)m.push(g2.bulan_tak_terbaca+' baris snapshot dilewati karena Bulan_YYYY-MM tidak terbaca')}
+    if(m.length){w.textContent='Periksa data: '+m.join('; ')+'.';w.style.display='block'}
+    prep()}catch(e){$('#badgeTxt').textContent='Gagal: '+e.message}
+  document.body.classList.remove('dim');render()}
+$('#loadBtn').onclick=muat;
+$('#resetBtn').onclick=()=>{try{localStorage.removeItem('hypotech_v2_key');localStorage.removeItem('hypotech_v2_api')}catch(e){}$('#apiKey').value='';DATA={aff:[],snap:[],bulan:[]};$('#badge').classList.remove('live');$('#badgeTxt').textContent='Belum terhubung';prep();render()};
+prep();render();
+if($('#apiUrl').value&&$('#apiKey').value)muat();
+setInterval(()=>{if(!document.hidden&&$('#badge').classList.contains('live'))muat()},600000);
+
+</script>
+</body>
+</html>
