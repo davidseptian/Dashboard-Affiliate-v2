@@ -136,6 +136,7 @@ input[type=text],input[type=password]{background:var(--panel);color:var(--text);
     <div class="card" id="c-up"></div>
     <div class="card" id="c-down"></div>
   </div>
+  <div class="card" id="c-good" style="margin-top:14px"></div>
 </section>
 
 <section class="tab" id="t-all">
@@ -287,7 +288,7 @@ const tierChip=t=>{const s=el('span','st '+(t==='Platinum'?'x2':t==='Gold'?'w':t
 
 function render(){
   const k=$('#kpis');k.replaceChildren();
-  if(!BL.length){k.appendChild(el('div','note','Belum ada data. Klik Sumber data, isi URL dan kunci, lalu Muat.'));['#c-gmv','#c-aktif','#c-tier','#c-top','#c-up','#c-down'].forEach(i=>$(i).replaceChildren());$('#tb').replaceChildren();$('#cnt').textContent='';return}
+  if(!BL.length){k.appendChild(el('div','note','Belum ada data. Klik Sumber data, isi URL dan kunci, lalu Muat.'));['#c-gmv','#c-aktif','#c-tier','#c-top','#c-up','#c-down','#c-good'].forEach(i=>$(i).replaceChildren());$('#tb').replaceChildren();$('#cnt').textContent='';return}
   const P=pool(),pm=prevM(M);
   const gm=sum(P.map(a=>g(a,M))),gp=pm?sum(P.map(a=>g(a,pm))):null;
   const akt=P.filter(a=>g(a,M)>0),kom=sum(P.map(a=>a.s[M]?a.s[M].kom:0));
@@ -320,8 +321,12 @@ function render(){
   const up=tr.filter(x=>x.t.d==='up').sort((a,b)=>(b.t.cu-b.t.pv)-(a.t.cu-a.t.pv)),dn=tr.filter(x=>x.t.d==='down').sort((a,b)=>(a.t.cu-a.t.pv)-(b.t.cu-b.t.pv));
   const rule='Dibanding bulan sebelumnya, naik atau turun ≥ 50%. Hanya akun yang GMV-nya di salah satu bulan ≥ Rp100 rb. Bulan tanpa data dihitung 0. ('+tr.length+' akun terdeteksi)';
   lst('#c-up','Naik daun',rule,up);lst('#c-down','Mulai sepi',rule,dn);
+  const streak=(a)=>{let n=0,i=BL.indexOf(M);while(i>=0&&g(a,BL[i])>=500000){n++;i--}return n};
+  const good=P.map(a=>({a,st:streak(a),cu:g(a,M),pm:pm?g(a,pm):0,avg:sum(BL.slice(-3).map(b=>g(a,b)))/Math.min(3,BL.length)})).filter(x=>x.st>=2).sort((x,y)=>y.st-x.st||y.cu-x.cu);
+  const cg=$('#c-good');cg.replaceChildren();cg.appendChild(el('h3',null,'Lagi bagus (konsisten)'));cg.appendChild(el('div','d','GMV minimal Rp500 rb (tier Gold ke atas) selama 2 bulan berturut-turut atau lebih sampai '+lbl(M)+'. Berbeda dari Naik daun: ini akun yang stabil bagus, bukan yang baru melonjak. ('+good.length+' akun)'));
+  const wg=el('div','tw');wg.appendChild(good.length?table(['Username','Platform','Bulan berturut-turut',lbl(pm||M),lbl(M),'Rata-rata 3 bln','Tier'],good.slice(0,15).map(x=>[linkBtn(x.a),x.a.pf,String(x.st),num(x.pm),num(x.cu),num(Math.round(x.avg)),tierLb(tierOf(x.cu))])):el('div','empty','Belum ada akun yang konsisten.'));cg.appendChild(wg);
   renderTable();
-  $('#foot').textContent='Sumber: Master 3 (Afiliator, Afiliator_Snapshot). Data tersedia sampai '+lbl(BL[BL.length-1])+'. Upload laporan baru dan catatan follow-up sementara tetap lewat Affiliate Tracker lama.';
+  $('#foot').textContent='Sumber: Master 3 (Afiliator, Afiliator_Snapshot). Data tersedia sampai '+lbl(BL[BL.length-1])+'. Upload laporan bulanan lewat Pusat Input (tab Upload Affiliate). Catatan follow-up sementara masih lewat Affiliate Tracker lama.';
 }
 function linkBtn(a){const b=el('a',null,a.u);b.href='#';b.style.cssText='color:var(--gold-light);text-decoration:none';b.onclick=e=>{e.preventDefault();openPanel(a)};return b}
 
@@ -348,10 +353,10 @@ function openPanel(a){
   const ser=[{n:'GMV',c:'var(--gold)',v:BL.map(b=>g(a,b))}];
   const c=el('div','card');c.style.marginTop='12px';c.id='pc';B.appendChild(c);
   card('#pc','GMV per bulan','Semua bulan di snapshot (bulan tanpa data = 0).',null,stackedBars(BL.map(lbl),ser,{fmt:rp,axisFmt:v=>v>=1e6?(v/1e6).toLocaleString('id-ID')+' jt':(v/1e3).toLocaleString('id-ID')+' rb',label:'GMV per bulan'}),
-    ()=>table(['Bulan','GMV','Terjual','Komisi'],BL.map(b=>[lbl(b),num(g(a,b)),num(a.s[b]?a.s[b].jual:0),num(a.s[b]?a.s[b].kom:0)])));
+    ()=>table(['Bulan','GMV','Terjual','Komisi','Tier'],BL.map(b=>[lbl(b),num(g(a,b)),num(a.s[b]?a.s[b].jual:0),num(a.s[b]?a.s[b].kom:0),tierLb(tierOf(g(a,b)))])));
   const i=el('div','card');i.style.marginTop='12px';
   [['Status',a.st||'—'],['Tier bulan '+lbl(M),tierLb(tierOf(g(a,M)))],['Terakhir update',a.upd||'—'],['Sumber',a.src||'—'],['Follow up terakhir',a.fu?(a.fuTgl?a.fuTgl+' · ':'')+a.fu:'Belum ada catatan']].forEach(([x,y])=>{const r=el('div');r.style.cssText='display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid var(--line);font-size:12.5px';r.appendChild(el('span',null,x));const v=el('b',null,y);v.style.fontWeight='600';r.appendChild(v);i.appendChild(r)});
-  B.appendChild(i);B.appendChild(el('div','note','Catatan follow-up baru sementara masih dicatat di Affiliate Tracker lama. Versi ini hanya menampilkan.'));
+  B.appendChild(i);B.appendChild(el('div','note','Riwayat bulanan diisi lewat Pusat Input (Upload Affiliate). Catatan follow-up baru sementara masih dicatat di Affiliate Tracker lama.'));
   $('#panel').classList.add('on');
 }
 $('#pClose').onclick=()=>$('#panel').classList.remove('on');
