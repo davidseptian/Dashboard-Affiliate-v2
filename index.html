@@ -26,6 +26,19 @@ header{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:s
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:5px 10px;border-radius:99px;border:1px solid var(--line);color:var(--text-2);background:var(--panel)}
 .badge i{width:7px;height:7px;border-radius:50%;background:var(--warn);display:inline-block}
 .badge.live i{background:var(--good)}
+.mwrap{position:relative;display:inline-block}
+.mbtn{display:inline-flex;align-items:center;gap:10px;min-width:170px;justify-content:space-between}
+.mcal{display:none;position:absolute;left:0;top:100%;margin-top:8px;z-index:45;background:#fff;color:#2b2b2b;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.6);width:min(300px,calc(100vw - 24px));padding:12px 14px 10px}
+.mcal.on{display:block}
+.mcal .calh{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px;height:34px;color:#222}
+.mcal .calh button{background:none;border:0;color:#666;font-size:17px;cursor:pointer;padding:2px 9px;border-radius:6px;line-height:1}
+.mcal .calh button:hover{background:#f0f0f0;color:#111}.mcal .calh button:disabled{opacity:.25;cursor:default}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.mgrid b{font-weight:600;font-size:13.5px;text-align:center;height:38px;line-height:38px;border-radius:8px;cursor:pointer;color:#1c1c1c;user-select:none}
+.mgrid b:hover{background:#efe3b0}.mgrid b.o{background:#f3f3f3;color:#b9b9b9;cursor:default}.mgrid b.o:hover{background:#f3f3f3}
+.mgrid b.s{background:var(--gold);color:#17140a;font-weight:700}
+.mfoot{display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid #e3e3e3;font-size:13px;font-weight:600}
+.mfoot a{color:#8a6d00;cursor:pointer}.mfoot a:hover{text-decoration:underline}
 .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0 6px}
 .filters label{font-size:12px;color:var(--muted)}
 select,input[type=text],button.btn{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:13px}
@@ -114,7 +127,7 @@ input[type=text],input[type=password]{background:var(--panel);color:var(--text);
 </div>
 <div id="warn" class="note" style="display:none"></div>
 <div class="filters">
-  <label>Bulan</label><select id="selM"></select>
+  <label>Bulan</label><div class="mwrap"><button class="btn mbtn" id="mBtn" type="button" aria-haspopup="dialog"><span id="mTxt">Pilih bulan</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button><div class="mcal" id="mcal" role="dialog" aria-label="Pilih bulan"></div></div>
   <label style="margin-left:10px">Platform</label><select id="selP"><option value="">Semua platform</option></select>
 </div>
 <nav class="tabs" id="tabs">
@@ -274,8 +287,8 @@ function prep(){
   AFF=DATA.aff.map(a=>({id:a[0],pf:a[1],u:a[2],n:a[3],fol:a[4],tipe:a[5],src:a[6],upd:a[7],fu:a[8],fuTgl:a[9],st:a[10],s:{}}));
   DATA.snap.forEach(r=>{if(AFF[r[0]])AFF[r[0]].s[r[1]]={gmv:r[2],jual:r[3],promo:r[4],show:r[5],vid:r[6],fol:r[7],kom:r[8]}});
   BL=DATA.bulan.slice();
-  const sm=$('#selM'),old=M;sm.replaceChildren();BL.slice().reverse().forEach(b=>{const o=el('option',null,lbl(b));o.value=b;sm.appendChild(o)});
-  M=BL.includes(old)?old:(BL[BL.length-1]||'');sm.value=M;
+  const old=M;
+  M=BL.includes(old)?old:(BL[BL.length-1]||'');rMTxt();
   const sp=$('#selP'),op=PF;sp.replaceChildren();const o0=el('option',null,'Semua platform');o0.value='';sp.appendChild(o0);
   [...new Set(AFF.map(a=>a.pf))].sort().forEach(p=>{const o=el('option',null,p);o.value=p;sp.appendChild(o)});sp.value=[...sp.options].some(o=>o.value===op)?op:'';PF=sp.value;
 }
@@ -361,7 +374,21 @@ function openPanel(a){
 }
 $('#pClose').onclick=()=>$('#panel').classList.remove('on');
 $('#panel').addEventListener('click',e=>{if(e.target.id==='panel')$('#panel').classList.remove('on')});
-$('#selM').onchange=e=>{M=e.target.value;LIM=200;render()};$('#selP').onchange=e=>{PF=e.target.value;LIM=200;render()};
+/* ----- pemilih bulan (grid bulan, gaya kalender Keuangan) ----- */
+let mYear=0;
+function rMTxt(){$('#mTxt').textContent=M?lbl(M):'Belum ada data'}
+function rMCal(){const c=$('#mcal');c.replaceChildren();const ys=BL.map(b=>+b.slice(0,4)),y0=Math.min(...ys),y1=Math.max(...ys);
+  const h=el('div','calh');const pv=el('button',null,'‹');pv.type='button';pv.disabled=mYear<=y0;pv.onclick=()=>{mYear--;rMCal()};const nx=el('button',null,'›');nx.type='button';nx.disabled=mYear>=y1;nx.onclick=()=>{mYear++;rMCal()};
+  h.appendChild(pv);h.appendChild(el('span',null,String(mYear)));h.appendChild(nx);c.appendChild(h);
+  const g=el('div','mgrid');BLN.forEach((n,i)=>{const k=mYear+'-'+String(i+1).padStart(2,'0'),ada=BL.includes(k),b=el('b',ada?(k===M?'s':''):'o',n.slice(0,3));if(ada)b.onclick=()=>{M=k;LIM=200;rMTxt();tutupM();render()};g.appendChild(b)});c.appendChild(g);
+  const f=el('div','mfoot');const a1=el('a',null,'Bulan terbaru');a1.onclick=()=>{M=BL[BL.length-1];LIM=200;rMTxt();tutupM();render()};f.appendChild(a1);f.appendChild(el('span',null,BL.length+' bulan ada data'));c.appendChild(f)}
+function bukaM(){if(!BL.length)return;mYear=+(M||BL[BL.length-1]).slice(0,4);rMCal();$('#mcal').classList.add('on')}
+function tutupM(){$('#mcal').classList.remove('on')}
+$('#mcal').addEventListener('click',e=>e.stopPropagation());
+$('#mBtn').onclick=e=>{e.stopPropagation();$('#mcal').classList.contains('on')?tutupM():bukaM()};
+document.addEventListener('click',e=>{if(!e.target.closest('#mcal')&&!e.target.closest('#mBtn'))tutupM()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')tutupM()});
+$('#selP').onchange=e=>{PF=e.target.value;LIM=200;render()};
 ['fQ','fT','fS'].forEach(i=>{$('#'+i).addEventListener('input',()=>{LIM=200;renderTable()});$('#'+i).addEventListener('change',()=>{LIM=200;renderTable()})});
 $('#more').onclick=()=>{LIM+=300;renderTable()};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+b.dataset.t));hideTip()});
