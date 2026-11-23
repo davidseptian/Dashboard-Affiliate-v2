@@ -106,6 +106,17 @@ footer{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid va
 .empty{padding:24px;text-align:center;color:var(--muted)}
 input[type=text],input[type=password]{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font:inherit;font-size:13px}
 </style>
+<script>
+/* Kunci rahasia: default hanya untuk sesi tab ini; tersimpan di perangkat bila "Ingat di perangkat ini" dicentang */
+const KEYN='hypotech_v2_key',INGAT='hypotech_v2_ingat';
+function lihatK(){try{const ingat=localStorage.getItem(INGAT)==='1',ls=localStorage.getItem(KEYN),ss=sessionStorage.getItem(KEYN);
+const cb=document.getElementById('ingat');if(cb)cb.checked=ingat;
+if(!ingat&&ls){sessionStorage.setItem(KEYN,ls);localStorage.removeItem(KEYN);return ls}
+return ss||(ingat?ls:null)||null}catch(e){return null}}
+function simpanK(k){try{const cb=document.getElementById('ingat'),ingat=!!(cb&&cb.checked);localStorage.setItem(INGAT,ingat?'1':'0');
+if(ingat){localStorage.setItem(KEYN,k);sessionStorage.removeItem(KEYN)}else{sessionStorage.setItem(KEYN,k);localStorage.removeItem(KEYN)}}catch(e){}}
+function hapusK(){try{localStorage.removeItem(KEYN);sessionStorage.removeItem(KEYN)}catch(e){}}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -121,7 +132,7 @@ input[type=text],input[type=password]{background:var(--panel);color:var(--text);
 </header>
 <div class="cfg" id="cfg">
   <input type="text" id="apiUrl" placeholder="URL Web App Apps Script (…/exec)">
-  <input type="password" id="apiKey" placeholder="Kunci rahasia" autocomplete="off" style="max-width:220px">
+  <input type="password" id="apiKey" placeholder="Kunci rahasia" autocomplete="off" style="max-width:220px"><label style="display:inline-flex;gap:6px;align-items:center;font-size:12px;opacity:.85;margin-left:8px;cursor:pointer" title="Kalau dicentang, kunci tersimpan di browser ini. Kalau tidak, kunci hilang saat tab ditutup."><input type="checkbox" id="ingat"> Ingat di perangkat ini</label>
   <button class="btn gold" id="loadBtn">Muat</button>
   <button class="btn" id="resetBtn">Putuskan &amp; hapus kunci</button>
 </div>
@@ -393,21 +404,21 @@ $('#selP').onchange=e=>{PF=e.target.value;LIM=200;render()};
 $('#more').onclick=()=>{LIM+=300;renderTable()};
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('section.tab').forEach(s=>s.classList.toggle('on',s.id==='t-'+b.dataset.t));hideTip()});
 $('#cfgBtn').onclick=()=>$('#cfg').classList.toggle('on');
-try{const u=localStorage.getItem('hypotech_v2_api'),k=localStorage.getItem('hypotech_v2_key');if(u)$('#apiUrl').value=u;if(k)$('#apiKey').value=k}catch(e){}
+try{const u=localStorage.getItem('hypotech_v2_api'),k=lihatK();if(u)$('#apiUrl').value=u;if(k)$('#apiKey').value=k}catch(e){}
 function jsonp(url,key){return new Promise((res,rej)=>{const cb='haf_'+Date.now();const s=document.createElement('script');const t=setTimeout(()=>{cl();rej(new Error('Waktu habis'))},40000);
   function cl(){clearTimeout(t);delete window[cb];s.remove()}
   window[cb]=d=>{cl();res(d)};s.onerror=()=>{cl();rej(new Error('Gagal memuat'))};
   s.src=url+(url.includes('?')?'&':'?')+'action=affiliate&fresh=1&key='+encodeURIComponent(key)+'&callback='+cb;document.head.appendChild(s)})}
 async function muat(){const u=$('#apiUrl').value.trim(),k=$('#apiKey').value;if(!u||!k){$('#cfg').classList.add('on');return}
   $('#badgeTxt').textContent='Memuat…';document.body.classList.add('dim');const w=$('#warn');w.style.display='none';
-  try{const d=await jsonp(u,k);if(d.error)throw new Error(d.error);DATA=d;try{localStorage.setItem('hypotech_v2_api',u);localStorage.setItem('hypotech_v2_key',k)}catch(e){}
+  try{const d=await jsonp(u,k);if(d.error)throw new Error(d.error);DATA=d;try{localStorage.setItem('hypotech_v2_api',u);simpanK(k)}catch(e){}
     $('#badge').classList.add('live');$('#cfg').classList.remove('on');$('#badgeTxt').textContent='Live dari Master 3 · '+(d.diperbarui||'');
     const g2=d.diagnosa,m=[];if(g2){if(g2.snap_tanpa_afiliator>0)m.push(g2.snap_tanpa_afiliator+' baris snapshot dilewati karena ID afiliator tidak ada di tab Afiliator');if(g2.bulan_tak_terbaca>0)m.push(g2.bulan_tak_terbaca+' baris snapshot dilewati karena Bulan_YYYY-MM tidak terbaca')}
     if(m.length){w.textContent='Periksa data: '+m.join('; ')+'.';w.style.display='block'}
     prep()}catch(e){$('#badgeTxt').textContent='Gagal: '+e.message}
   document.body.classList.remove('dim');render()}
 $('#loadBtn').onclick=muat;
-$('#resetBtn').onclick=()=>{try{localStorage.removeItem('hypotech_v2_key');localStorage.removeItem('hypotech_v2_api')}catch(e){}$('#apiKey').value='';DATA={aff:[],snap:[],bulan:[]};$('#badge').classList.remove('live');$('#badgeTxt').textContent='Belum terhubung';prep();render()};
+$('#resetBtn').onclick=()=>{try{hapusK();localStorage.removeItem('hypotech_v2_api')}catch(e){}$('#apiKey').value='';DATA={aff:[],snap:[],bulan:[]};$('#badge').classList.remove('live');$('#badgeTxt').textContent='Belum terhubung';prep();render()};
 prep();render();
 if($('#apiUrl').value&&$('#apiKey').value)muat();
 setInterval(()=>{if(!document.hidden&&$('#badge').classList.contains('live'))muat()},600000);
